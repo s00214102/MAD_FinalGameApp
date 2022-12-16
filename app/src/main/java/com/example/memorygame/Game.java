@@ -13,10 +13,10 @@ public class Game {
     //region Initialization
     private MainActivity main;
     private Animation anim;
-    private enum PlayState {learn, play, wait}
-    private PlayState playState = PlayState.wait;
+    public enum PlayState {learn, play, wait}
+    public PlayState playState = PlayState.wait;
     private List<Integer> sequence = new ArrayList<>();
-    private int score =0;
+    public int score =0;
 
     public Game(MainActivity main)
     {
@@ -40,13 +40,9 @@ public class Game {
 
     //region Game logic
     public void newGame(){
-        if(playState != PlayState.wait)
-            return;
-
-        sequence.clear();
-        main.tvScore.setText("");
-        main.tvSequence.setText("");
-        score =0;
+        if(playState != PlayState.wait){
+            return;}
+        clearData();
         newRound();
     }
     private void newRound(){
@@ -57,16 +53,24 @@ public class Game {
         buttonFlashHandler.post(r);
     }
     public void winRound(){
-        if(playState!= Game.PlayState.play)
-            return;
+        if(playState!= PlayState.play){
+            return;}
 
             score+=100;
             main.tvScore.setText(String.valueOf(score));
             newRound();
     }
+    private void clearData(){
+        sequence.clear();
+        main.tvScore.setText("");
+        main.tvSequence.setText("");
+        score =0;
+    }
     public void loseGame(){
-        if(playState == Game.PlayState.play)
-            changeState(Game.PlayState.wait);
+        if(playState != PlayState.play){
+            return;}
+        clearData();
+        changeState(PlayState.wait);
     }
     private void changeState(PlayState newState){
         playState=newState;
@@ -76,7 +80,7 @@ public class Game {
 
     //region Button flashing
     int currentIndex = 0; // used to track which button should flash in the sequence
-    long flashDelay = 1000; // delay between button flashes
+    long flashDelay = 400; // delay between button flashes in ms
     Handler buttonFlashHandler = new Handler();
     Runnable r = new Runnable() {
         @Override
@@ -117,7 +121,7 @@ public class Game {
     private void flashButton(ImageButton button) {
 
         anim = new AlphaAnimation(1,0);
-        anim.setDuration(1000); //You can manage the blinking time with this parameter
+        anim.setDuration(flashDelay); //You can manage the blinking time with this parameter
 
         anim.setRepeatCount(0);
         button.startAnimation(anim);

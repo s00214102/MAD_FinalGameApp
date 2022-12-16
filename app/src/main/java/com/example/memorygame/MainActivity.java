@@ -2,6 +2,7 @@ package com.example.memorygame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -40,7 +41,15 @@ public class MainActivity extends AppCompatActivity {
             game.winRound();
     }
     public void doLose(View view) {
-            game.loseGame();
+        if(game.playState != Game.PlayState.play){
+            return;}
+        // create intent and pass score
+        Intent A = new Intent(view.getContext(), ScoreActivity.class);
+        A.putExtra("score",game.score);
+
+        game.loseGame(); // lose the round, resets play data
+
+        startActivity(A); // move to score screen
     }
     //endregion
 }
