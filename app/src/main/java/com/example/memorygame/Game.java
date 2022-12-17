@@ -1,5 +1,6 @@
 package com.example.memorygame;
 
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.animation.AlphaAnimation;
@@ -21,9 +22,7 @@ public class Game {
     private int currentInputIndex = 0;
     public int score =0;
 
-
-    public Game(MainActivity main)
-    {
+    public Game(MainActivity main) {
         this.main=main;
         changeState(PlayState.wait);
     }
@@ -46,9 +45,11 @@ public class Game {
     public void newGame(){
         if(playState != PlayState.wait){
             return;}
+        playSound(R.raw.boing);
         clearData();
         newRound();
     }
+
     private void newRound(){
         changeState(PlayState.learn);
         AddToSequence();
@@ -56,41 +57,35 @@ public class Game {
         currentFlashIndex =0;
         buttonFlashHandler.post(r);
     }
+
     public void winRound(){
         if(playState!= PlayState.play){
             return;}
 
+        playSound(R.raw.correct);
         main.toggleSensor(false);
         score+=100;
+        currentInputIndex=0;
         main.tvScore.setText(String.valueOf(score));
-        newRound();
+        // add a delay
+        final Handler delay = new Handler();
+        delay.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                newRound();}
+        }, 1000);
+        //newRound();
     }
-    public void checkInput(int i){
-        // check if the input given by the player matches the number at the current index of the sequence
-        Log.i("Game", "passed value i: "+String.valueOf(i));
-        Log.i("Game", "currentInputIndex: "+String.valueOf(currentInputIndex));
-        Log.i("Game", "sequence.size(): "+String.valueOf(sequence.size()));
-        Log.i("Game", "sequence.get(currentInputIndex): "+String.valueOf(sequence.get(currentInputIndex)));
-        if(currentInputIndex>=sequence.size()){
-            return;}
 
-        // if the input matches the current number in sequence
-        if(i == sequence.get(currentInputIndex)){
-            // pass
-            Toast.makeText(main.getBaseContext(), "Correct!", Toast.LENGTH_LONG);
-            FlashButton(currentInputIndex);
-            currentInputIndex++;
-
-            // if correct inputs were given for full sequence
-            if(currentInputIndex>=sequence.size()) {
-                winRound();
-            }
-        }
-        // mismatch, lose
-        else
-            loseGame();
-
+    public void loseGame(){
+        //if(playState != PlayState.play){
+        //    return;}
+        playSound(R.raw.incorrect);
+        main.toggleSensor(false);
+        clearData();
+        changeState(PlayState.wait);
     }
+
     private void clearData(){
         sequence.clear();
         main.tvScore.setText("");
@@ -98,22 +93,59 @@ public class Game {
         score =0;
         currentInputIndex =0;
     }
-    public void loseGame(){
-        if(playState != PlayState.play){
-            return;}
-        main.toggleSensor(false);
-        clearData();
-        changeState(PlayState.wait);
-    }
+
     private void changeState(PlayState newState){
         playState=newState;
         main.tvState.setText(playState.toString());
     }
+
+    private static MediaPlayer mp;
+    private void playSound(int sound) {
+        mp = MediaPlayer.create(main, sound);
+
+        mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+    }
     //endregion
+
+    public void checkInput(int i){
+        // check if the input given by the player matches the number at the current index of the sequence
+        if(currentInputIndex>=sequence.size()){
+            return;}
+
+        Log.i("Game", "passed value i: "+String.valueOf(i));
+        Log.i("Game", "sequence.get(currentInputIndex): "+String.valueOf(sequence.get(currentInputIndex)));
+        Log.i("Game", "currentInputIndex: "+String.valueOf(currentInputIndex));
+        Log.i("Game", "sequence.size(): "+String.valueOf(sequence.size()));
+        Log.i("Game", "-----------------------------------------------------------------------------");
+
+        // if the input matches the current number in sequence
+        if(i == sequence.get(currentInputIndex)){
+            // pass
+            Toast.makeText(main, "Correct!", Toast.LENGTH_LONG);
+            FlashButton(i);
+            currentInputIndex++;
+
+            // if correct inputs were given for full sequence
+            if(currentInputIndex>=sequence.size()) {
+                Log.i("Game", "-----------------------------------WON ROUND----------------------------------------");
+                winRound();
+            }
+        }
+        // mismatch, lose
+        else{
+            Log.i("Game", "-----------------------------------LOST ROUND----------------------------------------");
+            loseGame();}
+
+    }
 
     //region Button flashing
     int currentFlashIndex = 0; // used to track which button should flash in the sequence
-    long flashDelay = 400; // delay between button flashes in ms
+    long flashDelay = 600; // delay between button flashes in ms
     Handler buttonFlashHandler = new Handler();
     Runnable r = new Runnable() {
         @Override
@@ -136,18 +168,22 @@ public class Game {
         switch(i){
             case 0:
                 // north
+                playSound(R.raw.meow);
                 flashButton(main.btnNorth);
                 break;
             case 1:
                 // east
+                playSound(R.raw.boing);
                 flashButton(main.btnEast);
                 break;
             case 2:
                 // south
+                playSound(R.raw.kicksnare);
                 flashButton(main.btnSouth);
                 break;
             case 3:
                 // west
+                playSound(R.raw.honk);
                 flashButton(main.btnWest);
                 break;
         }
