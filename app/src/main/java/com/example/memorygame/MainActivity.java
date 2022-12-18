@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Game game;
 
     // tilt controls
-    private int maxTilt = 4; // how much you need to tilt to register up/down/left/right
+    private int maxTilt = 3; // how much you need to tilt to register up/down/left/right
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private boolean isFlat = false; // set to true when the phone is flat, false when tilted

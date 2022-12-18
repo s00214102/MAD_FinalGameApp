@@ -1,7 +1,9 @@
 package com.example.memorygame;
 
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Handler;
 import android.util.Log;
 import android.view.animation.AlphaAnimation;
@@ -22,13 +24,20 @@ public class Game {
     private List<Integer> sequence = new ArrayList<>();
     private int currentInputIndex = 0;
     public int score =0;
-
-    private GameSounds gameSounds;
+    // Sound
+    private SoundPool soundPool;
+    int meow, boing, correct, incorrect, kicksnare, honk;
 
     public Game(MainActivity main) {
         this.main=main;
         changeState(PlayState.wait);
-        gameSounds = new GameSounds(main);
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        meow = soundPool.load(main, R.raw.meow,1);
+        boing = soundPool.load(main, R.raw.boing,1);
+        correct = soundPool.load(main, R.raw.correct,1);
+        incorrect = soundPool.load(main, R.raw.incorrect,1);
+        kicksnare = soundPool.load(main, R.raw.kicksnare,1);
+        honk = soundPool.load(main, R.raw.honk,1);
     }
     //endregion
 
@@ -49,9 +58,15 @@ public class Game {
     public void newGame(){
         if(playState != PlayState.wait){
             return;}
-        playSound("boing");
+        //playSound(boing);
         clearData();
-        newRound();
+        // add a delay before the new round starts
+        final Handler delay = new Handler();
+        delay.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                newRound();}
+        }, 1000);
     }
 
     private void newRound(){
@@ -66,7 +81,7 @@ public class Game {
         if(playState!= PlayState.play){
             return;}
 
-        //playSound("correct");
+        playSound(correct);
         main.toggleSensor(false);
         score+=100;
         currentInputIndex=0;
@@ -84,10 +99,18 @@ public class Game {
     public void loseGame(){
         //if(playState != PlayState.play){
         //    return;}
-        //playSound("incorrect");
+        playSound(incorrect);
         main.toggleSensor(false);
+        if(score>0){
+            Intent A = new Intent(main, ScoreActivity.class);
+            A.putExtra("score",score);
+            clearData();
+            changeState(PlayState.wait);
+            main.startActivity(A); // move to score screen
+        }
+        else{
         clearData();
-        changeState(PlayState.wait);
+        changeState(PlayState.wait);}
     }
 
     private void clearData(){
@@ -106,12 +129,6 @@ public class Game {
 
     //region Sound
     private static MediaPlayer mp;
-    public float getVolume(){
-        float actualVolume = (float) main.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float maxVolume = (float) main.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        float volume = actualVolume / maxVolume;
-        return volume;
-    }
     private void playSong(int song) {
         mp = MediaPlayer.create(main, song);
 
@@ -123,8 +140,9 @@ public class Game {
         });
     }
 
-    private void playSound(String name){
-        gameSounds.findAndPlaySoundByName(name, 100);
+    private void playSound(int sound){
+        soundPool.play(sound, 1,1,0,0,1);
+        //soundPool.autoPause();
     }
     //endregion
 
@@ -161,7 +179,7 @@ public class Game {
 
     //region Button flashing
     int currentFlashIndex = 0; // used to track which button should flash in the sequence
-    long flashDelay = 600; // delay between button flashes in ms
+    long flashDelay = 800; // delay between button flashes in ms
     Handler buttonFlashHandler = new Handler();
     Runnable r = new Runnable() {
         @Override
@@ -184,22 +202,22 @@ public class Game {
         switch(i){
             case 0:
                 // north
-                //playSound("meow");
+                playSound(meow);
                 flashButton(main.btnNorth);
                 break;
             case 1:
                 // east
-                //playSound("boing");
+                playSound(boing);
                 flashButton(main.btnEast);
                 break;
             case 2:
                 // south
-                //playSound("kicksnare");
+                playSound(kicksnare);
                 flashButton(main.btnSouth);
                 break;
             case 3:
                 // west
-                //playSound("honk");
+                playSound(honk);
                 flashButton(main.btnWest);
                 break;
         }

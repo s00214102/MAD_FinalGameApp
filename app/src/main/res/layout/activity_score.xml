@@ -58,6 +58,7 @@
         android:layout_height="60dp"
         android:layout_marginStart="32dp"
         android:text="Leaderboard"
+        android:onClick="doGoLeaderboard"
         app:layout_constraintBottom_toBottomOf="@+id/btnEnterScore"
         app:layout_constraintStart_toStartOf="parent" />
 

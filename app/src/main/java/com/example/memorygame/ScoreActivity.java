@@ -24,6 +24,12 @@ public class ScoreActivity extends AppCompatActivity {
         db = new DatabaseHandler(this);
 
         etName = findViewById(R.id.etName);
+        etName.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                etName.getText().clear();
+            }
+        });
         score = getIntent().getIntExtra("score",-1);
         TextView tvScore = findViewById(R.id.tvFinalScore);
         tvScore.setText(String.valueOf(score));
@@ -47,6 +53,12 @@ public class ScoreActivity extends AppCompatActivity {
             return;
         }
         db.addHighScore(new HighScore(_name, String.valueOf(score)));
+        Intent A = new Intent(view.getContext(), ScoreBoardActivity.class);
+        startActivity(A);
+        finish();
+    }
+
+    public void doGoLeaderboard(View view) {
         Intent A = new Intent(view.getContext(), ScoreBoardActivity.class);
         startActivity(A);
         finish();
