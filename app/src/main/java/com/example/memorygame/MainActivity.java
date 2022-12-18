@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mSensor;
     private boolean isFlat = false; // set to true when the phone is flat, false when tilted
 
+    public AudioManager audioManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnSouth = findViewById(R.id.btnSouth);
         btnWest = findViewById(R.id.btnWest);
         tvSequence = findViewById(R.id.tvSequence);
+
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         game = new Game(this);
         // sensor setup
@@ -140,4 +145,5 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
     //endregion
+
 }

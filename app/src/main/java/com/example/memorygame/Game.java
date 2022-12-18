@@ -1,5 +1,6 @@
 package com.example.memorygame;
 
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.Log;
@@ -22,9 +23,12 @@ public class Game {
     private int currentInputIndex = 0;
     public int score =0;
 
+    private GameSounds gameSounds;
+
     public Game(MainActivity main) {
         this.main=main;
         changeState(PlayState.wait);
+        gameSounds = new GameSounds(main);
     }
     //endregion
 
@@ -45,7 +49,7 @@ public class Game {
     public void newGame(){
         if(playState != PlayState.wait){
             return;}
-        playSound(R.raw.boing);
+        playSound("boing");
         clearData();
         newRound();
     }
@@ -62,7 +66,7 @@ public class Game {
         if(playState!= PlayState.play){
             return;}
 
-        playSound(R.raw.correct);
+        //playSound("correct");
         main.toggleSensor(false);
         score+=100;
         currentInputIndex=0;
@@ -80,7 +84,7 @@ public class Game {
     public void loseGame(){
         //if(playState != PlayState.play){
         //    return;}
-        playSound(R.raw.incorrect);
+        //playSound("incorrect");
         main.toggleSensor(false);
         clearData();
         changeState(PlayState.wait);
@@ -98,10 +102,18 @@ public class Game {
         playState=newState;
         main.tvState.setText(playState.toString());
     }
+    //endregion
 
+    //region Sound
     private static MediaPlayer mp;
-    private void playSound(int sound) {
-        mp = MediaPlayer.create(main, sound);
+    public float getVolume(){
+        float actualVolume = (float) main.audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        float maxVolume = (float) main.audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = actualVolume / maxVolume;
+        return volume;
+    }
+    private void playSong(int song) {
+        mp = MediaPlayer.create(main, song);
 
         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -109,6 +121,10 @@ public class Game {
                 mp.start();
             }
         });
+    }
+
+    private void playSound(String name){
+        gameSounds.findAndPlaySoundByName(name, 100);
     }
     //endregion
 
@@ -168,22 +184,22 @@ public class Game {
         switch(i){
             case 0:
                 // north
-                playSound(R.raw.meow);
+                //playSound("meow");
                 flashButton(main.btnNorth);
                 break;
             case 1:
                 // east
-                playSound(R.raw.boing);
+                //playSound("boing");
                 flashButton(main.btnEast);
                 break;
             case 2:
                 // south
-                playSound(R.raw.kicksnare);
+                //playSound("kicksnare");
                 flashButton(main.btnSouth);
                 break;
             case 3:
                 // west
-                playSound(R.raw.honk);
+                //playSound("honk");
                 flashButton(main.btnWest);
                 break;
         }
