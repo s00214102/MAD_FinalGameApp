@@ -17,7 +17,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     //region Initialization
-    public TextView tvSequence, tvState, tvScore;
+    public TextView tvSequence, tvState, tvScore, tvPopup;
     public ImageButton btnNorth, btnEast, btnSouth, btnWest;
     private Game game;
 
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnSouth = findViewById(R.id.btnSouth);
         btnWest = findViewById(R.id.btnWest);
         tvSequence = findViewById(R.id.tvSequence);
+        tvPopup = findViewById(R.id.tvPopup);
 
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
@@ -55,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void doStart(View view) {
         game.newGame();
     }
-    public void doWin(View view) {
+    // for testing
+/*    public void doWin(View view) {
             game.winRound();
     }
     public void doLose(View view) {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         game.loseGame(); // lose the round, resets play data
 
         startActivity(A); // move to score screen
-    }
+    }*/
     //endregion
 
     //region Sensor
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // checks if the phone is flat
         // not using the maxTilt value here because it was resetting to flat too easily otherwise
-        if (x < 1 && x > -1 && y < 1 && y > -1) {
+        if (x < 2 && x > -2 && y < 2 && y > -2) {
             if (isFlat == false) {
                 isFlat = true;
             }
@@ -146,4 +148,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     //endregion
 
+    public void showButtons(Boolean value){
+        if(value){
+            btnEast.setVisibility(View.VISIBLE);
+            btnNorth.setVisibility(View.VISIBLE);
+            btnSouth.setVisibility(View.VISIBLE);
+            btnWest.setVisibility(View.VISIBLE);
+        }
+        else{
+            btnEast.setVisibility(View.INVISIBLE);
+            btnNorth.setVisibility(View.INVISIBLE);
+            btnSouth.setVisibility(View.INVISIBLE);
+            btnWest.setVisibility(View.INVISIBLE);
+        }
+    }
+    public void showPopupTextView(Boolean value){
+        if(value)
+            tvPopup.setVisibility(View.VISIBLE);
+        else
+            tvPopup.setVisibility(View.INVISIBLE);
+    }
 }

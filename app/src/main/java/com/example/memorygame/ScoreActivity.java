@@ -24,12 +24,13 @@ public class ScoreActivity extends AppCompatActivity {
         db = new DatabaseHandler(this);
 
         etName = findViewById(R.id.etName);
-        etName.setOnClickListener(new View.OnClickListener(){
+/*        etName.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                etName.getText().clear();
+                if(etName.getText().toString()=="Name")
+                    etName.getText().clear();
             }
-        });
+        });*/
         score = getIntent().getIntExtra("score",-1);
         TextView tvScore = findViewById(R.id.tvFinalScore);
         tvScore.setText(String.valueOf(score));

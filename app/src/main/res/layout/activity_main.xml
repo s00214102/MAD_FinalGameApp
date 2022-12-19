@@ -114,7 +114,6 @@
 
     <Button
         android:id="@+id/btnStart"
-
         android:layout_width="118dp"
         android:layout_height="66dp"
         android:layout_marginStart="16dp"
@@ -146,5 +145,18 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tvPopup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="popup message"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="invisible"
+        android:visibility="invisible"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,6 +19,7 @@ public class Game {
     //region Initialization
     private MainActivity main;
     private Animation anim;
+    private String tag = "Game";
     public enum PlayState {learn, play, wait}
     public PlayState playState = PlayState.wait;
     private List<Integer> sequence = new ArrayList<>();
@@ -31,10 +32,11 @@ public class Game {
     public Game(MainActivity main) {
         this.main=main;
         changeState(PlayState.wait);
+        // load sounds
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        correct = soundPool.load(main, R.raw.correct,1);
         meow = soundPool.load(main, R.raw.meow,1);
         boing = soundPool.load(main, R.raw.boing,1);
-        correct = soundPool.load(main, R.raw.correct,1);
         incorrect = soundPool.load(main, R.raw.incorrect,1);
         kicksnare = soundPool.load(main, R.raw.kicksnare,1);
         honk = soundPool.load(main, R.raw.honk,1);
@@ -60,6 +62,9 @@ public class Game {
             return;}
         //playSound(boing);
         clearData();
+
+        popupMessage("Get ready!");
+
         // add a delay before the new round starts
         final Handler delay = new Handler();
         delay.postDelayed(new Runnable() {
@@ -101,6 +106,20 @@ public class Game {
         //    return;}
         playSound(incorrect);
         main.toggleSensor(false);
+
+        popupMessage("You lost..");
+
+        // add a delay before calling the rest of the code
+        final Handler delay = new Handler();
+        delay.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                goToScoreScreenOrRestartGame();
+            }
+        }, 900);
+    }
+
+    private void goToScoreScreenOrRestartGame(){
         if(score>0){
             Intent A = new Intent(main, ScoreActivity.class);
             A.putExtra("score",score);
@@ -109,8 +128,9 @@ public class Game {
             main.startActivity(A); // move to score screen
         }
         else{
-        clearData();
-        changeState(PlayState.wait);}
+            clearData();
+            changeState(PlayState.wait);
+        }
     }
 
     private void clearData(){
@@ -120,12 +140,51 @@ public class Game {
         score =0;
         currentInputIndex =0;
     }
+    //endregion
 
+    //region States
     private void changeState(PlayState newState){
         playState=newState;
         main.tvState.setText(playState.toString());
+
+        switch (playState) {
+            case learn:
+                enterLearnState();
+                break;
+            case play:
+                enterPlayState();
+                break;
+            case wait:
+                enterWaitState();
+                break;
+        }
+    }
+    private void enterLearnState(){
+        Log.i(tag, "Entering learn state");
+    }
+    private void enterPlayState(){
+        Log.i(tag, "Entering play state");
+    }
+    private void enterWaitState(){
+        Log.i(tag, "Entering wait state");
     }
     //endregion
+
+    private void popupMessage(String message){
+        // hide buttons and show popup
+        main.showButtons(false);
+        main.tvPopup.setText(message.toString());
+        main.showPopupTextView(true);
+        // after a delay, hide popup and show buttons
+        final Handler delay = new Handler();
+        delay.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                main.showPopupTextView(false);
+                main.showButtons(true);
+                }
+        }, 1000);
+    }
 
     //region Sound
     private static MediaPlayer mp;
