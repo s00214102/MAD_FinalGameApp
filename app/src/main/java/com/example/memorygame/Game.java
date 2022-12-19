@@ -57,14 +57,13 @@ public class Game {
     //endregion
 
     //region Game logic
+    // calls newRound()
     public void newGame(){
         if(playState != PlayState.wait){
             return;}
-        //playSound(boing);
+
         clearData();
-
         popupMessage("Get ready!");
-
         // add a delay before the new round starts
         final Handler delay = new Handler();
         delay.postDelayed(new Runnable() {
@@ -74,6 +73,7 @@ public class Game {
         }, 1000);
     }
 
+    // changes to learn state
     private void newRound(){
         changeState(PlayState.learn);
         AddToSequence();
@@ -82,6 +82,7 @@ public class Game {
         buttonFlashHandler.post(r);
     }
 
+    // calls newRound()
     public void winRound(){
         if(playState!= PlayState.play){
             return;}
@@ -101,6 +102,7 @@ public class Game {
         //newRound();
     }
 
+    // calls goToScoreScreenOrRestartGame()
     public void loseGame(){
         //if(playState != PlayState.play){
         //    return;}
@@ -118,14 +120,14 @@ public class Game {
             }
         }, 900);
     }
-
+    // changes to wait state
     private void goToScoreScreenOrRestartGame(){
         if(score>0){
             Intent A = new Intent(main, ScoreActivity.class);
             A.putExtra("score",score);
             clearData();
-            changeState(PlayState.wait);
             main.startActivity(A); // move to score screen
+            changeState(PlayState.wait);
         }
         else{
             clearData();
@@ -161,18 +163,25 @@ public class Game {
     }
     private void enterLearnState(){
         Log.i(tag, "Entering learn state");
+        main.showPlayButton(false);
+        //main.showButtons(true);
     }
     private void enterPlayState(){
         Log.i(tag, "Entering play state");
+        main.showPlayButton(false);
+        //main.showButtons(true);
     }
     private void enterWaitState(){
         Log.i(tag, "Entering wait state");
+        // hide everything button the play button
+        main.showPlayButton(true);
     }
     //endregion
 
     private void popupMessage(String message){
         // hide buttons and show popup
         main.showButtons(false);
+        main.showPlayButton(false);
         main.tvPopup.setText(message.toString());
         main.showPopupTextView(true);
         // after a delay, hide popup and show buttons

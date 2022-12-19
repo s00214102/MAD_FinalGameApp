@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //region Initialization
     public TextView tvSequence, tvState, tvScore, tvPopup;
     public ImageButton btnNorth, btnEast, btnSouth, btnWest;
+    public Button btnPlay;
     private Game game;
 
     // tilt controls
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnWest = findViewById(R.id.btnWest);
         tvSequence = findViewById(R.id.tvSequence);
         tvPopup = findViewById(R.id.tvPopup);
+        btnPlay = findViewById(R.id.btnStart);
 
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 
@@ -167,5 +170,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             tvPopup.setVisibility(View.VISIBLE);
         else
             tvPopup.setVisibility(View.INVISIBLE);
+    }
+    public void showPlayButton(Boolean value){
+        if(value){
+            //showButtons(false);
+            //tvScore.setVisibility(View.INVISIBLE);
+            btnPlay.setVisibility(View.VISIBLE);
+        }
+        else{
+            btnPlay.setVisibility(View.INVISIBLE);
+            //tvScore.setVisibility(View.VISIBLE);
+            //showButtons(true);
+        }
     }
 }
